@@ -1,18 +1,26 @@
-export default function HomePage() {
-  const mockUrls = [
-    "https://utfs.io/f/300aa55f-be0b-4b9b-a675-3486264ff86d-2oo.png",
-  ];
-  const mockImages = mockUrls.map((url, index) => ({
-    id: index + 1,
-    url,
-  }));
+import Image from "next/image";
+import { db } from "~/server/db";
+export const dynamic = "force-dynamic";
+export default async function HomePage() {
+  const images = await db.query.images.findMany({
+    orderBy: (data, { desc }) => desc(data.id),
+  });
 
   return (
     <main className="container">
       <div className="flex flex-wrap gap-4">
-        {mockImages.map((image) => (
+        {images.map((image) => (
           <div key={image.id} className="w-48">
-            <img src={image.url} alt="" />
+            <Image
+              width={48}
+              height={48}
+              src={image.url}
+              alt=""
+              title={image.name}
+            />
+            <span>
+              {image.id} - {image.name}
+            </span>
           </div>
         ))}
       </div>
